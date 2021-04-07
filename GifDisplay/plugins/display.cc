@@ -61,37 +61,39 @@ void WireStripDisplay(TString address, CSCDetID id, vector<WIRE> &wire, vector<S
            TString legendName = "";
 
            SetSaveNameLegendName(name, legendName, address, id, Run, Event);
-
            vector<int> layer_strip = FindChamberIndex(id, strip);
            vector<int> layer_wire = FindChamberIndex(id, wire);
            vector<int> layer_comparator = FindChamberIndex(id, comparator);
 
-           if (id.Ring==1) {
-
-              CSCDetID idr4 = id; idr4.Ring = 4;
-              vector<int> layer_wire_r4 = FindChamberIndex(idr4, wire);
-              vector<int> layer_strip_r4 = FindChamberIndex(idr4, strip);
-              vector<int> layer_comparator_r4 = FindChamberIndex(idr4, comparator);
-
-              layer_wire.insert(layer_wire.end(),layer_wire_r4.begin(),layer_wire_r4.end());
-              layer_strip.insert(layer_strip.end(),layer_strip_r4.begin(),layer_strip_r4.end());
-              layer_comparator.insert(layer_comparator.end(),layer_comparator_r4.begin(),layer_comparator_r4.end());
-              }
+           if (id.Ring==1) 
+	     {
+	       CSCDetID idr4 = id; idr4.Ring = 4;
+	       vector<int> layer_wire_r4 = FindChamberIndex(idr4, wire);
+	       vector<int> layer_strip_r4 = FindChamberIndex(idr4, strip);
+	       vector<int> layer_comparator_r4 = FindChamberIndex(idr4, comparator);
+	       
+	       layer_wire.insert(layer_wire.end(),layer_wire_r4.begin(),layer_wire_r4.end());
+	       layer_strip.insert(layer_strip.end(),layer_strip_r4.begin(),layer_strip_r4.end());
+	       layer_comparator.insert(layer_comparator.end(),layer_comparator_r4.begin(),layer_comparator_r4.end());
+	     }
 
            const int nStrip = NStrip->GetBinContent(id.Station, id.Ring);
            const int nWireGroup = NWireGroup->GetBinContent(id.Station, id.Ring);
            const int nCFEB = nStrip/16;
-//draw event display
+
+
+
+	   //draw event display
            TCanvas *c1 = new TCanvas("c1", "", 0, 0, 2000, 1500);
 
            c1->Divide(1,3);
 
            c1->SetRightMargin(0.15);
            c1->SetBottomMargin(0.25);
-           c1->SetTopMargin(0.25);
-//strip display
+           c1->SetTopMargin(0.15);
+	   //strip display
            c1->cd(3)->SetGridy();
-gPad->SetBottomMargin(0.15);
+	   gPad->SetBottomMargin(0.2);
            TH2F* stripDis = new TH2F("stripDis", "", nStrip*2+2, 1, nStrip+2, 6, 1, 7);
            TH2F* stripDis_text = new TH2F("stripDis_text", "", nStrip*2+2, 1, nStrip+2, 6, 0.5, 6.5);
            TH1F* cfebNotReadOut = new TH1F("cfebNotReadOut", "", nStrip+1, 1, nStrip+2);
@@ -102,7 +104,7 @@ gPad->SetBottomMargin(0.15);
            TH1F* cfebNotInstall_comparator_me21 = new TH1F("cfebNotInstall_comparator_me21", "", 162, 1, 163);
            TH1F* cfebNotInstall_comparator_me11 = new TH1F("cfebNotInstall_comparator_me11", "", 162, 1, 163);
 
-           TPaveText *pt3 = new TPaveText(0.4,0.95,0.6,0.99,"NDC");
+           TPaveText *pt3 = new TPaveText(0.4,0.91,0.6,0.95,"NDC");
 //           double cfeb[5] = {0, 0, 0, 0, 0};
            double cfeb[nCFEB] = {}; 
            StripDisplay(/*c1,*/ id, layer_strip, strip, cfeb, stripDis, stripDis_text, cfebNotReadOut, cfebNotInstall_me21, cfebNotInstall_me11);
@@ -113,47 +115,47 @@ gPad->SetBottomMargin(0.15);
            stripDis_text->Draw("text same");
            cfebNotReadOut->Draw("B same");
            if (id.Station == 2) {
-//              cfebNotInstall_me21->Draw("B same");
-              } else if (id.Station == 1) {
-//                        cfebNotInstall_me11->Draw("B same");
-                        }
+	     //              cfebNotInstall_me21->Draw("B same");
+	   } else if (id.Station == 1) {
+	     //                        cfebNotInstall_me11->Draw("B same");
+	   }
            pt3->Draw();
-
-//wire display
-          c1->cd(1)->SetGridy();
-gPad->SetTopMargin(0.1);
-gPad->SetBottomMargin(0.15);
-          TH2F* wireDis = new TH2F("wireDis", "", nWireGroup, 1, nWireGroup+1, 6, 1, 7);
-          TH2F* wireDis_text = new TH2F("wireDis_text", "", nWireGroup, 1, nWireGroup+1, 6, 1, 7);
-          TPaveText *pt1 = new TPaveText(0.4,.96,0.6,0.99, "NDC");
-
-          WireDisplay(id, layer_wire, wire, wireDis, wireDis_text);
-          SetTitle(pt1, "Anode Hit Timing");
+	   
+	   //wire display
+	   c1->cd(1)->SetGridy();
+	   gPad->SetTopMargin(0.2);
+	   gPad->SetBottomMargin(0.2);
+	   TH2F* wireDis = new TH2F("wireDis", "", nWireGroup, 1, nWireGroup+1, 6, 1, 7);
+	   TH2F* wireDis_text = new TH2F("wireDis_text", "", nWireGroup, 1, nWireGroup+1, 6, 1, 7);
+	   TPaveText *pt1 = new TPaveText(0.4,.81,0.6,0.85, "NDC");
+	   
+	   WireDisplay(id, layer_wire, wire, wireDis, wireDis_text);
+	   SetTitle(pt1, "Anode Hit Timing");
    
-          wireDis->Draw("COLZ");
-          wireDis_text->Draw("text same");
-          pt1->Draw();
-//legend
-          SetEventDisplayLegend(legendName);
-
-//comparator display
+	   wireDis->Draw("COLZ");
+	   wireDis_text->Draw("text same");
+	   pt1->Draw();
+	   //legend
+	   SetEventDisplayLegend(legendName);
+	  
+	  //comparator display
           c1->cd(2)->SetGridy();
-gPad->SetBottomMargin(0.15);
-          TPaveText *pt4 = new TPaveText(0.4,.95,0.6,0.99, "NDC");
-         TH2F* comparatorDis = new TH2F("comparatorDis", "", nStrip*2+2, 1, nStrip*2+3, 6, 1, 7);
-         TH2F* comparatorDis_text = new TH2F("comparatorDis_text", "", nStrip*2+2, 1, nStrip*2+3, 6, 1, 7);
+	  gPad->SetBottomMargin(0.2);
+          TPaveText *pt4 = new TPaveText(0.4,.91,0.6,0.95, "NDC");
+	  TH2F* comparatorDis = new TH2F("comparatorDis", "", nStrip*2+2, 1, nStrip*2+3, 6, 1, 7);
+	  TH2F* comparatorDis_text = new TH2F("comparatorDis_text", "", nStrip*2+2, 1, nStrip*2+3, 6, 1, 7);
 
           ComparatorDisplay(id, layer_comparator, comparator, comparatorDis, comparatorDis_text);
           comparatorDis->Draw("COLZ");
 
-//          cfebNotInstall->Draw("B same");
-//          cfebNotReadOut_comparator->Draw("B same");
-/*
-          if (id.Station == 2) {
-             cfebNotInstall_comparator_me21->Draw("B same");
-             } else if (id.Station == 1) {
-                       cfebNotInstall_comparator_me11->Draw("B same");
-                       }
+	  //          cfebNotInstall->Draw("B same");
+	  //          cfebNotReadOut_comparator->Draw("B same");
+	  /*
+	    if (id.Station == 2) {
+	    cfebNotInstall_comparator_me21->Draw("B same");
+	    } else if (id.Station == 1) {
+	    cfebNotInstall_comparator_me11->Draw("B same");
+	    }
 */
           SetTitle(pt4, "Comparator Hit Timing");
           pt4->Draw();
@@ -231,42 +233,38 @@ bool ChamberUsedForEventDisplay(CSCDetID id, vector<CSCDetID> usedChamber){
 
 void SetSaveNameLegendName(TString& name, TString& legendName, TString address, CSCDetID id, int Run, int Event){
 
-           //int Run = 1;
-           //int Event = 1;
- TString  space = "                                   "; 
-           if (id.Endcap == 1){
-              legendName = "ME+" + NumberToString(id.Station) + "/" + NumberToString(id.Ring) + "/" + NumberToString(id.Chamber) + space+space + "Run #" + NumberToString(Run) + "  " + "Event #" + NumberToString(Event);
-
-              name = address + "/MEPlus" + NumberToString(id.Station) + "_" + NumberToString(id.Ring) + "_" + NumberToString(id.Chamber) +"_"+NumberToString(Run) + "_" + NumberToString(Event);
-              }
-
-           if (id.Endcap == 2){
-              legendName = "ME-" + NumberToString(id.Station) + "/" + NumberToString(id.Ring) + "/" + NumberToString(id.Chamber)  + space+space + "Run #" + NumberToString(Run) + "  " + "Event #" + NumberToString(Event);
-
-              name = address + "/MEMinus" + NumberToString(id.Station) + "_" + NumberToString(id.Ring) + "_" + NumberToString(id.Chamber) + "_"+NumberToString(Run) + "_"+ NumberToString(Event);
-
-              }
-
-
+  //int Run = 1;
+  //int Event = 1;
+  
+  TString  space = "                                   "; 
+  if (id.Endcap == 1){
+    legendName = "ME+" + NumberToString(id.Station) + "/" + NumberToString(id.Ring) + "/" + NumberToString(id.Chamber) + space+space + "Run #" + NumberToString(Run) + "  " + "Event #" + NumberToString(Event);
+    
+    name = address + "/MEPlus" + NumberToString(id.Station) + "_" + NumberToString(id.Ring) + "_" + NumberToString(id.Chamber) +"_"+NumberToString(Run) + "_" + NumberToString(Event);
+  }
+  
+  if (id.Endcap == 2){
+    legendName = "ME-" + NumberToString(id.Station) + "/" + NumberToString(id.Ring) + "/" + NumberToString(id.Chamber)  + space+space + "Run #" + NumberToString(Run) + "  " + "Event #" + NumberToString(Event);
+    
+    name = address + "/MEMinus" + NumberToString(id.Station) + "_" + NumberToString(id.Ring) + "_" + NumberToString(id.Chamber) + "_"+NumberToString(Run) + "_"+ NumberToString(Event);
+    
+  }
 }
 
 
-void SaveUsedChamber(CSCDetID id, vector<int> layer_strip, vector<int> layer_wire, vector<int> layer_comparator, vector<CSCDetID> &usedChamber){
-
-           CSCDetID tempID;
-
-           if (int(layer_strip.size()) > 0 && int(layer_wire.size()) > 0 && int(layer_comparator.size()) > 0){
-
-              tempID.Endcap = id.Endcap;
-              tempID.Station = id.Station;
-              tempID.Ring = id.Ring;
-              tempID.Chamber = id.Chamber;
-
-              usedChamber.push_back(tempID);
-
-              }
-
-
+void SaveUsedChamber(CSCDetID id, vector<int> layer_strip, vector<int> layer_wire, vector<int> layer_comparator, vector<CSCDetID> &usedChamber)
+{
+  
+  CSCDetID tempID;
+  
+  if (int(layer_strip.size()) > 0 && int(layer_wire.size()) > 0 && int(layer_comparator.size()) > 0)
+    {
+      tempID.Endcap = id.Endcap;
+      tempID.Station = id.Station;
+      tempID.Ring = id.Ring;
+      tempID.Chamber = id.Chamber;
+      usedChamber.push_back(tempID);
+    }
 }
 
 
@@ -275,8 +273,8 @@ void StripDisplay(/*TCanvas* c1,*/ CSCDetID id, vector<int>& layer_strip, vector
 //         c1->cd(4)->SetGridy();         
 
 /*           TH2F* stripDis = new TH2F("stripDis", "", 162, 1, 82, 6, 1, 7);
-           TH2F* stripDis_text = new TH2F("stripDis_text", "", 162, 1, 82, 6, 1, 7);
-           TH1F* cfebNotReadOut = new TH1F("cfebNotReadOut", "", 81, 1, 82);
+	     TH2F* stripDis_text = new TH2F("stripDis_text", "", 162, 1, 82, 6, 1, 7);
+	     TH1F* cfebNotReadOut = new TH1F("cfebNotReadOut", "", 81, 1, 82);
 */
            for (int i = 0; i < int(layer_strip.size()); i++){//in each interesting layer has strip hits
 
@@ -362,40 +360,35 @@ void MakeOneLayerStripDisplay(int layer, vector<Strips> &s, TH2F* stripDisplay, 
 
         }else if(option == 2){
 
-                          for (int i = 0; i < int(s.size()); i++){
-
-                            int x1 = 2*(s[i].Strip-1) + 1;
-                            int x2 = 2*(s[i].Strip-1) + 2;
-
-                            if (doStagger && (layer == 1 || layer == 3 || layer ==5) ){
-
-                               stripDisplay->SetBinContent(x2, layer, s[i].MaxADC);
-
-                               }else {//if(layer == 2 || layer == 4 || layer == 6){
-
-                                        stripDisplay->SetBinContent(x1, layer, s[i].MaxADC);
-                                                                                                                                                       
-                                        }
-                              }
-
-                          }
-
-
+	for (int i = 0; i < int(s.size()); i++){
+	  
+	  int x1 = 2*(s[i].Strip-1) + 1;
+	  int x2 = 2*(s[i].Strip-1) + 2;
+	  
+	  if (doStagger && (layer == 1 || layer == 3 || layer ==5) ){
+	    
+	    stripDisplay->SetBinContent(x2, layer, s[i].MaxADC);
+	    
+	  }else {//if(layer == 2 || layer == 4 || layer == 6){
+	    
+	    stripDisplay->SetBinContent(x1, layer, s[i].MaxADC);
+            
+	  }
+	}
+      }
 }
 
 
-void MakeOneLayerWireDisplay(int layer, vector<Wire> &w, TH2F* wireDisplay){
-
-        for (int i = 0; i < int(w.size()); i++){
-
-            double time = w[i].TimeBin;
-
-            if (w[i].TimeBin == 0){time+=0.1;}
-
-            wireDisplay->SetBinContent(w[i].WireGroup, layer, time);
-
-            }
-
+void MakeOneLayerWireDisplay(int layer, vector<Wire> &w, TH2F* wireDisplay)
+{
+  for (int i = 0; i < int(w.size()); i++)
+    {
+      
+      double time = w[i].TimeBin;
+      if (w[i].TimeBin == 0){time+=0.1;}
+      
+      wireDisplay->SetBinContent(w[i].WireGroup, layer, time);
+    }
 }
 
 
@@ -942,7 +935,7 @@ void WireDisplay(CSCDetID id, vector<int>& layer_wire, vector<WIRE>& wire, TH2F*
 
 void SetEventDisplayLegend(TString legendName){
 
-          TLegend* leg = new TLegend(0.05, 0.95, .2, .99);
+          TLegend* leg = new TLegend(0.05, 0.92, .2, .96);
           leg->AddEntry((TObject*)0, legendName, "");
           leg->SetFillColor(0);
           leg->SetBorderSize(0);

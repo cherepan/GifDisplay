@@ -36,17 +36,17 @@
 
 
 #include "DataFormats/CSCDigi/interface/CSCWireDigi.h"
- #include "DataFormats/CSCDigi/interface/CSCWireDigiCollection.h"
- #include "DataFormats/CSCDigi/interface/CSCStripDigi.h"
- #include "DataFormats/CSCDigi/interface/CSCStripDigiCollection.h"
- #include "DataFormats/CSCDigi/interface/CSCComparatorDigi.h"
- #include "DataFormats/CSCDigi/interface/CSCComparatorDigiCollection.h"
- #include "DataFormats/CSCDigi/interface/CSCALCTDigi.h"
- #include "DataFormats/CSCDigi/interface/CSCALCTDigiCollection.h"
- #include "DataFormats/CSCDigi/interface/CSCCLCTDigi.h"
- #include "DataFormats/CSCDigi/interface/CSCCLCTDigiCollection.h"
- #include "DataFormats/CSCDigi/interface/CSCCorrelatedLCTDigi.h"
- #include "DataFormats/CSCDigi/interface/CSCCorrelatedLCTDigiCollection.h"
+#include "DataFormats/CSCDigi/interface/CSCWireDigiCollection.h"
+#include "DataFormats/CSCDigi/interface/CSCStripDigi.h"
+#include "DataFormats/CSCDigi/interface/CSCStripDigiCollection.h"
+#include "DataFormats/CSCDigi/interface/CSCComparatorDigi.h"
+#include "DataFormats/CSCDigi/interface/CSCComparatorDigiCollection.h"
+#include "DataFormats/CSCDigi/interface/CSCALCTDigi.h"
+#include "DataFormats/CSCDigi/interface/CSCALCTDigiCollection.h"
+#include "DataFormats/CSCDigi/interface/CSCCLCTDigi.h"
+#include "DataFormats/CSCDigi/interface/CSCCLCTDigiCollection.h"
+#include "DataFormats/CSCDigi/interface/CSCCorrelatedLCTDigi.h"
+#include "DataFormats/CSCDigi/interface/CSCCorrelatedLCTDigiCollection.h"
 
  
 #include "DataFormats/MuonDetId/interface/CSCDetId.h"
@@ -146,27 +146,27 @@ class GifDisplay : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   edm::EDGetTokenT<CSCStripDigiCollection> stripDigiTagSrc;
   edm::EDGetTokenT<CSCComparatorDigiCollection> compDigiTagSrc;
   edm::EDGetTokenT<CSCCLCTDigiCollection> clctDigiTagSrc;
-
-//edm::InputTag compDigiTag;
-edm::InputTag cscRecHitTag;
-//edm::InputTag cscSegTag;
+  
+  //edm::InputTag compDigiTag;
+  edm::InputTag cscRecHitTag;
+  //edm::InputTag cscSegTag;
 //edm::InputTag saMuonTag;
 //edm::InputTag l1aTag;
-edm::InputTag alctDigiTag;
-edm::InputTag clctDigiTag;
-edm::InputTag corrlctDigiTag;
+  edm::InputTag alctDigiTag;
+  edm::InputTag clctDigiTag;
+  edm::InputTag corrlctDigiTag;
 //edm::InputTag hltTag;
-
+  
 //std::string theRootFileName,pdf;
-std::string eventDisplayDir;
-std::vector<double> eventList;
-std::vector<int> endcapList;
-std::vector<int> stationList;
-std::vector<int> ringList;
-std::vector<int> chamberList;
-std::string eventlistFile;
-
-std::string chamberType;
+  std::string eventDisplayDir;
+  std::vector<double> eventList;
+  std::vector<int> endcapList;
+  std::vector<int> stationList;
+  std::vector<int> ringList;
+  std::vector<int> chamberList;
+  std::string eventlistFile;
+  
+  std::string chamberType;
 
 };
 
@@ -197,14 +197,14 @@ fout->cd();
 //wireDigiTag  = iConfig.getParameter<edm::InputTag>("wireDigiTag");
 //comparatorDigiTag = iConfig.getParameter<edm::InputTag>("comparatorDigiTag");
   wireDigiTagSrc=consumes<CSCWireDigiCollection>(iConfig.getUntrackedParameter<edm::InputTag>("wireDigiTagSrc")),
-  stripDigiTagSrc=consumes<CSCStripDigiCollection>(iConfig.getUntrackedParameter<edm::InputTag>("stripDigiTagSrc")),
-  compDigiTagSrc=consumes<CSCComparatorDigiCollection>(iConfig.getUntrackedParameter<edm::InputTag>("compDigiTagSrc")),
-//alctDigiTag = iConfig.getParameter<edm::InputTag>("alctDigiTag");
-clctDigiTagSrc = consumes<CSCCLCTDigiCollection>(iConfig.getUntrackedParameter<edm::InputTag>("clctDigiTagSrc"));
-//corrlctDigiTag = iConfig.getParameter<edm::InputTag>("corrlctDigiTag");
-eventDisplayDir = iConfig.getUntrackedParameter<std::string>("eventDisplayDir","/home/mhl/public_html/2017/20171025_cscSeg/eventdisplay/");
-eventlistFile = "eventList.txt";
-chamberType = iConfig.getUntrackedParameter<std::string>("chamberType", "11");
+    stripDigiTagSrc=consumes<CSCStripDigiCollection>(iConfig.getUntrackedParameter<edm::InputTag>("stripDigiTagSrc")),
+    compDigiTagSrc=consumes<CSCComparatorDigiCollection>(iConfig.getUntrackedParameter<edm::InputTag>("compDigiTagSrc")),
+    //alctDigiTag = iConfig.getParameter<edm::InputTag>("alctDigiTag");
+    clctDigiTagSrc = consumes<CSCCLCTDigiCollection>(iConfig.getUntrackedParameter<edm::InputTag>("clctDigiTagSrc"));
+  //corrlctDigiTag = iConfig.getParameter<edm::InputTag>("corrlctDigiTag");
+  eventDisplayDir = iConfig.getUntrackedParameter<std::string>("plotdir","/afs/cern.ch/work/c/cherepan/CSC/Latest/CMSSW_9_4_4/src/GifDisplay/GifDisplay/test/plotdir/");
+  eventlistFile = "EventList.junk";
+ chamberType = iConfig.getUntrackedParameter<std::string>("chamberType", "11");
 }
 
 
@@ -231,65 +231,64 @@ GifDisplay::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    using namespace edm;
    using namespace std;
 
-int testE = 2;
-int testS = 1;
-int testR = 1;
-int testC = 21;
-bool doDebug = false;
+   int testE = 2;
+   int testS = 1;
+   int testR = 1;
+   int testC = 21;
+   bool doDebug = false;
+   
+   edm::ESHandle<CSCGeometry> cscGeom;
+   iSetup.get<MuonGeometryRecord>().get(cscGeom);
+   //edm::EventId evId=iEvent.id();
+   //unsigned int time=iEvent.time().unixTime();
+   
+   double Run,Event;
+   Run = iEvent.id().run();
+   Event = iEvent.id().event();
 
-edm::ESHandle<CSCGeometry> cscGeom;
-iSetup.get<MuonGeometryRecord>().get(cscGeom);
-//edm::EventId evId=iEvent.id();
-//unsigned int time=iEvent.time().unixTime();
+   //vector<CSCDetID> chamberList;
+   //chamberList.clear();
+   endcapList.clear();
+   stationList.clear();
+   ringList.clear();
+   chamberList.clear();
+   eventList.clear();
+   
+   vector<WIRE>   wire_container;
+   vector<STRIP>  strip_container;
+   vector<COMPARATOR> com_container;
+ 
+   //==========================Get event list for display================
+   ifstream file(eventlistFile);
+   while (file)
+     {
+       string line;
+       getline(file, line);
+       istringstream is(line);
+       while (is) {
+	 
+	 double event;
+	 is >> event;
+	 eventList.push_back(event);
+	 
+	 int endcap; is >> endcap;
+	 endcapList.push_back(endcap);
+	 
+	 int station; is >> station;
+	 stationList.push_back(station);
+	 
+	 int ring; is >> ring;
+	 ringList.push_back(ring);
+	 
+	 int chamber; is >> chamber;
+	 chamberList.push_back(chamber);
+	 
+       }
 
-double Run,Event;
-Run = iEvent.id().run();
-Event = iEvent.id().event();
-
-//vector<CSCDetID> chamberList;
-//chamberList.clear();
-endcapList.clear();
-stationList.clear();
-ringList.clear();
-chamberList.clear();
-eventList.clear();
-
-vector<WIRE>   wire_container;
-vector<STRIP>  strip_container;
-vector<COMPARATOR> com_container;
-
-//==========================Get event list for display================
-ifstream file(eventlistFile);
-while (file)
- {
-     string line;
-     getline(file, line);
-     istringstream is(line);
-     while (is) {
-
-           double event;
-           is >> event;
-           eventList.push_back(event);
-
-           int endcap; is >> endcap;
-           endcapList.push_back(endcap);
-
-           int station; is >> station;
-           stationList.push_back(station);
-
-           int ring; is >> ring;
-           ringList.push_back(ring);
-
-           int chamber; is >> chamber;
-           chamberList.push_back(chamber);
-
-           }
-
-  }
-
-
-if (find (eventList.begin(), eventList.end(), Event) == eventList.end()) return;
-
+     }
+   
+   if (find (eventList.begin(), eventList.end(), Event) == eventList.end()) return;
+   
 /*
 CSCDetID chamberID;
 
@@ -498,24 +497,25 @@ if (doDebug) {
 
     for (CSCCLCTDigiCollection::const_iterator digiIt = range.first; digiIt!=range.second; ++digiIt){
 
-if (doDebug) cout << idCLCT << endl;
-if (doDebug) {
-//cout << "strip: " << digiIt->getKeyStrip() << endl;
-//cout << "pattern: " << digiIt->getPattern() << endl;
-//cout << "quality: " << digiIt->getQuality() << endl;
-
-}
-
-
-        }
+      if (doDebug) cout << idCLCT << endl;
+      if (doDebug) {
+	cout << "strip: " << digiIt->getKeyStrip() << endl;
+	cout << "pattern: " << digiIt->getPattern() << endl;
+	cout << "quality: " << digiIt->getQuality() << endl;
+	
+      }
+      
 
     }
+    
+ }
 
 //make event display
 vector<CSCDetID> usedChamber;
 
 //if (Event < 500){//find(eventList.begin(), eventList.end(), Event) != eventList.end()){
 //if (find(eventList.begin(), eventList.end(), Event) != eventList.end()){
+
 
 for (int i = 0; i < int(eventList.size()); i++) {
 
@@ -536,7 +536,7 @@ for (int i = 0; i < int(eventList.size()); i++) {
    tmpId.Chamber = chamberL;
 
    WireStripDisplay(eventDisplayDir, tmpId, wire_container, strip_container, com_container, usedChamber, Run, Event);
-}
+ }
 //   }
 
 
