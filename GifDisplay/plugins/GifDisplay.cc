@@ -146,6 +146,9 @@ class GifDisplay : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   edm::EDGetTokenT<CSCStripDigiCollection> stripDigiTagSrc;
   edm::EDGetTokenT<CSCComparatorDigiCollection> compDigiTagSrc;
   edm::EDGetTokenT<CSCCLCTDigiCollection> clctDigiTagSrc;
+  edm::ESGetToken<CSCGeometry, MuonGeometryRecord> cscGeom_test;
+
+
   
   //edm::InputTag compDigiTag;
   edm::InputTag cscRecHitTag;
@@ -200,8 +203,11 @@ fout->cd();
     stripDigiTagSrc=consumes<CSCStripDigiCollection>(iConfig.getUntrackedParameter<edm::InputTag>("stripDigiTagSrc")),
     compDigiTagSrc=consumes<CSCComparatorDigiCollection>(iConfig.getUntrackedParameter<edm::InputTag>("compDigiTagSrc")),
     //alctDigiTag = iConfig.getParameter<edm::InputTag>("alctDigiTag");
+    cscGeom_test = esConsumes<CSCGeometry, MuonGeometryRecord>(),
     clctDigiTagSrc = consumes<CSCCLCTDigiCollection>(iConfig.getUntrackedParameter<edm::InputTag>("clctDigiTagSrc"));
   //corrlctDigiTag = iConfig.getParameter<edm::InputTag>("corrlctDigiTag");
+
+
   eventDisplayDir = iConfig.getUntrackedParameter<std::string>("plotdir","/afs/cern.ch/work/c/cherepan/CSC/Latest/CMSSW_9_4_4/src/GifDisplay/GifDisplay/test/plotdir/");
   eventlistFile = "EventList.junk";
  chamberType = iConfig.getUntrackedParameter<std::string>("chamberType", "11");
@@ -236,9 +242,11 @@ GifDisplay::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    int testR = 1;
    int testC = 21;
    bool doDebug = false;
-   
-   edm::ESHandle<CSCGeometry> cscGeom;
-   iSetup.get<MuonGeometryRecord>().get(cscGeom);
+
+   auto const cscGeom = &iSetup.getData(cscGeom_test);
+
+   //edm::ESHandle<CSCGeometry> cscGeom;
+   //   iSetup.get<MuonGeometryRecord>().get(cscGeom);
    //edm::EventId evId=iEvent.id();
    //unsigned int time=iEvent.time().unixTime();
    
