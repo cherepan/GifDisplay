@@ -208,9 +208,9 @@ fout->cd();
   //corrlctDigiTag = iConfig.getParameter<edm::InputTag>("corrlctDigiTag");
 
 
-  eventDisplayDir = iConfig.getUntrackedParameter<std::string>("plotdir","/afs/cern.ch/work/c/cherepan/CSC/Latest/CMSSW_9_4_4/src/GifDisplay/GifDisplay/test/plotdir/");
+  eventDisplayDir = iConfig.getUntrackedParameter<std::string>("plotdir","/afs/cern.ch/work/c/cherepan/CSC/LocalReco/CMSSW_13_3_0/src/GifDisplay/GifDisplay/test/plotdir");
   eventlistFile = "EventList.junk";
- chamberType = iConfig.getUntrackedParameter<std::string>("chamberType", "11");
+  chamberType = iConfig.getUntrackedParameter<std::string>("chamberType", "11");
 }
 
 

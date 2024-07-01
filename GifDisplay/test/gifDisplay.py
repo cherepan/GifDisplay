@@ -11,18 +11,34 @@ process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
 #process.load("Configuration/Geometry/IdealGeometry_cff")
 #process.load("Configuration/StandardSequences/Geometry_cff")
 process.load("Configuration/StandardSequences/MagneticField_cff")
-process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
+#process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
+process.load("Configuration/StandardSequences/FrontierConditions_GlobalTag_cff")
 process.load("Configuration/StandardSequences/RawToDigi_Data_cff")
 process.load("Configuration.StandardSequences.Reconstruction_cff")
 process.load("RecoMuon.MuonSeedGenerator.standAloneMuonSeeds_cff")
 #process.load("RecoMuon.GlobalMuonProducer.globalMuons_cff")
 
 #process.GlobalTag.globaltag = '74X_dataRun2_Prompt_v0'
-process.GlobalTag.globaltag = '92X_dataRun2_Prompt_v11'
 
-process.options = cms.untracked.PSet(
-	SkipEvent = cms.untracked.vstring('LogicError','ProductNotFound')
-)
+
+MCGlobalTag='124X_mcRun3_2022_realistic_v12' #for DYmumu_PU140
+#DataGlobalTag='76X_dataRun2_v19'
+#DataGlobalTag='76X_dataRun2_v15'
+#DataGlobalTag='92X_dataRun2_Prompt_v11'
+#DataGlobalTag='106X_dataRun2_v32'
+DataGlobalTag='124X_dataRun3_PromptAnalysis_v1'
+
+
+
+process.GlobalTag.globaltag=MCGlobalTag
+
+
+
+
+
+#process.options = cms.untracked.PSet(
+#	SkipEvent = cms.untracked.vstring('LogicError','ProductNotFound')
+#)
 
 
 process.MessageLogger = cms.Service("MessageLogger",
