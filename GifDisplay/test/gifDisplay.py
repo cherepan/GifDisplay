@@ -55,7 +55,15 @@ process.MessageLogger = cms.Service("MessageLogger",
 pickEvent = '284036:173346539'
 process.source = cms.Source("PoolSource",
 #  fileNames = cms.untracked.vstring('file:me11_test27_oct23.root')
-  fileNames = cms.untracked.vstring('file:pickevents_26.root') #../../inputRoot/0026F566-83BB-E711-B677-7845C4FC3683.root')
+
+                            
+#  fileNames = cms.untracked.vstring('file:pickevents_26.root') #../../inputRoot/0026F566-83BB-E711-B677-7845C4FC3683.root')
+  fileNames = cms.untracked.vstring('file:SingleMu10Pt_100_TestEvents_AddUFLocalREco_1.root')
+
+
+
+                            
+#        /store/user/cherepan/RelValZMM_14/RelValMM14_ReRunLocalReco/230927_095118/0000/SingleMu10Pt_100_TestEvents_AddUFLocalREco_1.root
 #  fileNames = cms.untracked.vstring('file:Zmu_rawreco_2016H.root') #../../inputRoot/0026F566-83BB-E711-B677-7845C4FC3683.root')
 
 #  fileNames = cms.untracked.vstring('file:../../inputRoot/Zmu_rawreco_2016H.root')
@@ -77,12 +85,23 @@ rootFileName = cms.untracked.string("output.root"),
 
 stripDigiTagSrc = cms.untracked.InputTag("muonCSCDigis","MuonCSCStripDigi"),
 wireDigiTagSrc = cms.untracked.InputTag("muonCSCDigis","MuonCSCWireDigi"),
+                                    
 compDigiTagSrc = cms.untracked.InputTag("muonCSCDigis", "MuonCSCComparatorDigi"),
-cscRecHitTag = cms.InputTag("csc2DRecHits",""),
+                                    
 alctDigiTag = cms.InputTag('muonCSCDigis', 'MuonCSCALCTDigi'),
 clctDigiTagSrc = cms.untracked.InputTag('muonCSCDigis', 'MuonCSCCLCTDigi'),
-corrlctDigiTag = cms.InputTag('muonCSCDigis', 'MuonCSCCorrelatedLCTDigi'),
 
+#MuonDigiCollection<CSCDetId,CSCStripDigi>    "muonCSCDigis"              "MuonCSCStripDigi"   "localRecoUF"
+#MuonDigiCollection<CSCDetId,CSCWireDigi>    "muonCSCDigis"              "MuonCSCWireDigi"   "localRecoUF"
+
+
+                                    
+#cscRecHitTag = cms.InputTag("csc2DRecHits",""),
+
+#corrlctDigiTag = cms.InputTag('muonCSCDigis', 'MuonCSCCorrelatedLCTDigi'),  # unused 
+
+
+                                    
 #directory for eventdisplay
 eventDisplayDir = cms.untracked.string(options.plotdir),
 #eventDisplayDir = cms.untracked.string("/home/mhl/public_html/2017/20171201_cscSeg/"),

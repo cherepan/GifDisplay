@@ -48,6 +48,7 @@ bool IsGoodPeak(Strips &s, Strips &sSideL, Strips& sSideR);
 double FindRatio(Strips &s, Strips& sSideL, Strips& sSideR);
 bool CheckRight(Strips &s, Strips &sR);
 bool CheckLeft(Strips &s, Strips &sL);
+
 template <class T>
 vector<int> FindChamberIndex(CSCDetID id, vector<T> &vec);
 void WireDisplay(CSCDetID id, vector<int>& layer_wire, vector<WIRE>& wire, TH2F* wireDis, TH2F* wireDis_text);

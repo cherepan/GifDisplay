@@ -25,7 +25,7 @@
 #include <fstream>
 #include <algorithm>
 #include "Rtypes.h"
-void WireStripDisplay(TString address, CSCDetID id, vector<WIRE> &wire, vector<STRIP> &strip, vector<COMPARATOR> &comparator, vector<CSCDetID> &usedChamber, int Run, int Event){
+void WireStripDisplay(TString address, CSCDetID TargetChamber, vector<WIRE> &wire, vector<STRIP> &strip, vector<COMPARATOR> &comparator, vector<CSCDetID> &usedChamber, int Run, int Event){
 
         gStyle->SetPalette(55);
 
@@ -54,20 +54,23 @@ void WireStripDisplay(TString address, CSCDetID id, vector<WIRE> &wire, vector<S
         NStrip->SetBinContent(3, 2, 80);
         NStrip->SetBinContent(4, 2, 80);
 
-        if (ChamberUsedForEventDisplay(id, usedChamber)) return;//this chamber has not been used for eventdisplay
+        if (ChamberUsedForEventDisplay(TargetChamber, usedChamber)) return;//this chamber has not been used for eventdisplay
 
            srand (time(NULL));
            TString name = "";
            TString legendName = "";
 
-           SetSaveNameLegendName(name, legendName, address, id, Run, Event);
-           vector<int> layer_strip = FindChamberIndex(id, strip);
-           vector<int> layer_wire = FindChamberIndex(id, wire);
-           vector<int> layer_comparator = FindChamberIndex(id, comparator);
+           SetSaveNameLegendName(name, legendName, address, TargetChamber, Run, Event);
 
-           if (id.Ring==1) 
+           vector<int> layer_strip = FindChamberIndex(TargetChamber, strip);  // STrip indices in the given chamber
+	   std::cout<<"  FindChamberIndex(id, wire)   "<< std::endl;
+	   vector<int> layer_wire = FindChamberIndex(TargetChamber, wire);   // WG indices in the given chamber
+	   std::cout<<"  FindChamberIndex(id, comparator)   "<< std::endl;
+           vector<int> layer_comparator = FindChamberIndex(TargetChamber, comparator);  // Comparator indices in the given chamber
+	   std::cout<< "   display   1      "<<  layer_strip.size() <<"    " << layer_wire.size() <<  "   "<< layer_comparator.size() <<std::endl;
+           if (TargetChamber.Ring==1) 
 	     {
-	       CSCDetID idr4 = id; idr4.Ring = 4;
+	       CSCDetID idr4 = TargetChamber; idr4.Ring = 4;
 	       vector<int> layer_wire_r4 = FindChamberIndex(idr4, wire);
 	       vector<int> layer_strip_r4 = FindChamberIndex(idr4, strip);
 	       vector<int> layer_comparator_r4 = FindChamberIndex(idr4, comparator);
@@ -77,8 +80,8 @@ void WireStripDisplay(TString address, CSCDetID id, vector<WIRE> &wire, vector<S
 	       layer_comparator.insert(layer_comparator.end(),layer_comparator_r4.begin(),layer_comparator_r4.end());
 	     }
 
-           const int nStrip = NStrip->GetBinContent(id.Station, id.Ring);
-           const int nWireGroup = NWireGroup->GetBinContent(id.Station, id.Ring);
+           const int nStrip = NStrip->GetBinContent(TargetChamber.Station, TargetChamber.Ring);
+           const int nWireGroup = NWireGroup->GetBinContent(TargetChamber.Station, TargetChamber.Ring);
            const int nCFEB = nStrip/16;
 
 
@@ -107,16 +110,16 @@ void WireStripDisplay(TString address, CSCDetID id, vector<WIRE> &wire, vector<S
            TPaveText *pt3 = new TPaveText(0.4,0.91,0.6,0.95,"NDC");
 //           double cfeb[5] = {0, 0, 0, 0, 0};
            double cfeb[nCFEB] = {}; 
-           StripDisplay(/*c1,*/ id, layer_strip, strip, cfeb, stripDis, stripDis_text, cfebNotReadOut, cfebNotInstall_me21, cfebNotInstall_me11);
+           StripDisplay(/*c1,*/ TargetChamber, layer_strip, strip, cfeb, stripDis, stripDis_text, cfebNotReadOut, cfebNotInstall_me21, cfebNotInstall_me11);
            MakeShadeForComparatorPanel(cfebNotReadOut, cfebNotInstall_me21, cfebNotReadOut_comparator, cfebNotInstall_comparator_me21, cfebNotInstall_comparator_me11);
            SetTitle(pt3, "Cathode Hit ADC Count");
 
            stripDis->Draw("COLZ");
            stripDis_text->Draw("text same");
            cfebNotReadOut->Draw("B same");
-           if (id.Station == 2) {
+           if (TargetChamber.Station == 2) {
 	     //              cfebNotInstall_me21->Draw("B same");
-	   } else if (id.Station == 1) {
+	   } else if (TargetChamber.Station == 1) {
 	     //                        cfebNotInstall_me11->Draw("B same");
 	   }
            pt3->Draw();
@@ -128,8 +131,33 @@ void WireStripDisplay(TString address, CSCDetID id, vector<WIRE> &wire, vector<S
 	   TH2F* wireDis = new TH2F("wireDis", "", nWireGroup, 1, nWireGroup+1, 6, 1, 7);
 	   TH2F* wireDis_text = new TH2F("wireDis_text", "", nWireGroup, 1, nWireGroup+1, 6, 1, 7);
 	   TPaveText *pt1 = new TPaveText(0.4,.81,0.6,0.85, "NDC");
+
+
+	   std::cout<<"    ==================================================================================   "<< std::endl;
+	   for(unsigned int iwc = 0; iwc < wire.size(); iwc++ )
+	     {
+	       
+	       std::cout<<"   iwc        "<< iwc<< "  TargetChamber    "<< wire.at(iwc).first.Endcap << "      " << wire.at(iwc).first.Station
+			<< "   Ring  "<< wire.at(iwc).first.Ring<<  "   chamber     "<< wire.at(iwc).first.Chamber << "  layer     "
+			<<  wire.at(iwc).first.Layer  <<"         " << wire.at(iwc).second.size() << std::endl;
+	       //       for(unsigned int iwg =0 ; iwg < wire_container.at(iwc).second.size(); iwg++)
+	       //        {
+	       //          std::cout<<"---->    wg  "<< wire_container.at(iwc).second.at(iwg).WireGroup <<"      time  "<< wire_container.at(iwc).second.at(iwg).TimeBin <<std::endl;
+	       //        }
+
+	       
+	     }
+	   std::cout<< " check id2 input   "<< TargetChamber.Endcap << "      "<<TargetChamber.Station<<"    "<< TargetChamber.Ring<<"     "
+		    <<TargetChamber.Chamber << "    " << TargetChamber.Layer <<std::endl;
+	   for(unsigned int n =0 ; n < layer_wire.size() ; n++)
+	     {
+	       std::cout<<"   layer_wire   at   "<<  n  << "  =  "<< layer_wire.at(n) << std::endl;
+	     }
+
 	   
-	   WireDisplay(id, layer_wire, wire, wireDis, wireDis_text);
+	   WireDisplay(TargetChamber, layer_wire, wire, wireDis, wireDis_text);
+	   
+	   std::cout<< "  wireDis ->GetEntries()   "<< wireDis->GetEntries()   <<  std::endl;
 	   SetTitle(pt1, "Anode Hit Timing");
    
 	   wireDis->Draw("COLZ");
@@ -145,8 +173,8 @@ void WireStripDisplay(TString address, CSCDetID id, vector<WIRE> &wire, vector<S
 	  TH2F* comparatorDis = new TH2F("comparatorDis", "", nStrip*2+2, 1, nStrip*2+3, 6, 1, 7);
 	  TH2F* comparatorDis_text = new TH2F("comparatorDis_text", "", nStrip*2+2, 1, nStrip*2+3, 6, 1, 7);
 
-          ComparatorDisplay(id, layer_comparator, comparator, comparatorDis, comparatorDis_text);
-          comparatorDis->Draw("COLZ");
+          ComparatorDisplay(TargetChamber, layer_comparator, comparator, comparatorDis, comparatorDis_text);
+	  comparatorDis->Draw("COLZ");
 
 	  //          cfebNotInstall->Draw("B same");
 	  //          cfebNotReadOut_comparator->Draw("B same");
@@ -189,7 +217,7 @@ void WireStripDisplay(TString address, CSCDetID id, vector<WIRE> &wire, vector<S
           }
 */
 
-          c1->Update();
+	  c1->Update();
           c1->SaveAs(name + ".png");
           c1->SaveAs(name + ".pdf");
 
@@ -201,7 +229,25 @@ void WireStripDisplay(TString address, CSCDetID id, vector<WIRE> &wire, vector<S
           delete comparatorDis;
           delete comparatorDis_text;
           delete cfebNotReadOut;
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -269,13 +315,14 @@ void SaveUsedChamber(CSCDetID id, vector<int> layer_strip, vector<int> layer_wir
 
 
 void StripDisplay(/*TCanvas* c1,*/ CSCDetID id, vector<int>& layer_strip, vector<STRIP>& strip, double cfeb[], TH2F* stripDis, TH2F* stripDis_text, TH1F* cfebNotReadOut, TH1F* cfebNotInstall_me21, TH1F* cfebNotInstall_me11){ 
-
+  
 //         c1->cd(4)->SetGridy();         
 
 /*           TH2F* stripDis = new TH2F("stripDis", "", 162, 1, 82, 6, 1, 7);
 	     TH2F* stripDis_text = new TH2F("stripDis_text", "", 162, 1, 82, 6, 1, 7);
 	     TH1F* cfebNotReadOut = new TH1F("cfebNotReadOut", "", 81, 1, 82);
 */
+
            for (int i = 0; i < int(layer_strip.size()); i++){//in each interesting layer has strip hits
 
                int tempStation = strip[layer_strip[i]].first.Station;
@@ -296,6 +343,7 @@ void StripDisplay(/*TCanvas* c1,*/ CSCDetID id, vector<int>& layer_strip, vector
                if (tempLayer == id.Layer){
 
                   MakeOneLayerStripDisplay(tempLayer, tempStrip, stripDis_text, option2, doStagger);
+
 
                   }
                }
@@ -368,9 +416,9 @@ void MakeOneLayerStripDisplay(int layer, vector<Strips> &s, TH2F* stripDisplay, 
 	  if (doStagger && (layer == 1 || layer == 3 || layer ==5) ){
 	    
 	    stripDisplay->SetBinContent(x2, layer, s[i].MaxADC);
-	    
+	    std::cout<<" 1:  "<< x2<<"  "<<  layer<< "  "<< s[i].MaxADC<< std::endl;
 	  }else {//if(layer == 2 || layer == 4 || layer == 6){
-	    
+	    std::cout<<" 2:  "<< x2<<"  "<<  layer<< "  "<< s[i].MaxADC<< std::endl;
 	    stripDisplay->SetBinContent(x1, layer, s[i].MaxADC);
             
 	  }
@@ -386,7 +434,7 @@ void MakeOneLayerWireDisplay(int layer, vector<Wire> &w, TH2F* wireDisplay)
       
       double time = w[i].TimeBin;
       if (w[i].TimeBin == 0){time+=0.1;}
-      
+      std::cout<< " ------------------------   MakeOneLayerWireDisplay:   " <<  w[i].WireGroup << "   layer     "  <<  layer  << "     "<< time << std::endl;
       wireDisplay->SetBinContent(w[i].WireGroup, layer, time);
     }
 }
@@ -871,10 +919,13 @@ bool CheckLeft(Strips &s, Strips &sL){
 }
 
 
+
+
 template <class T>
 vector<int> FindChamberIndex(CSCDetID id, vector<T> &vec){
 
         vector<int> chamber;
+
         for (int i = 0; i < int(vec.size()); i++){
 
             CSCDetID tempID = vec[i].first;
@@ -897,17 +948,37 @@ vector<int> FindChamberIndex(CSCDetID id, vector<T> &vec){
 void WireDisplay(CSCDetID id, vector<int>& layer_wire, vector<WIRE>& wire, TH2F* wireDis, TH2F* wireDis_text){
 
 
-          if (id.Ring == 4) id.Ring = 1; //me11a wire digi are saved in me11b
+  std::cout<< " check id3 input   "<< id.Endcap << "      "<<id.Station<<"    "<< id.Ring<<"     " <<id.Chamber << "    id Lyaer  " << id.Layer <<std::endl;
+  std::cout<<"   $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$   "<< std::endl;
+  for(unsigned int iwc = 0; iwc < wire.size(); iwc++ )
+    {
+      
+      std::cout<<"   iwc        "<< iwc<< "  id    "<< wire.at(iwc).first.Endcap << "      " << wire.at(iwc).first.Station
+	       << "   Ring  "<< wire.at(iwc).first.Ring<<  "   chamber     "<< wire.at(iwc).first.Chamber << "  layer     "
+	       <<  wire.at(iwc).first.Layer  <<"         " << wire.at(iwc).second.size() << std::endl;
+      //       for(unsigned int iwg =0 ; iwg < wire_container.at(iwc).second.size(); iwg++)
+      //        {
+      //          std::cout<<"---->    wg  "<< wire_container.at(iwc).second.at(iwg).WireGroup <<"      time  "<< wire_container.at(iwc).second.at(iwg).TimeBin <<std::endl;
+      //        }
+      
+      
+    }
 
+
+          if (id.Ring == 4) id.Ring = 1; //me11a wire digi are saved in me11b
+	  std::cout<<"  =============== Wire Display 1     "<< wire.size() << endl;
           for (int i = 0; i < int(layer_wire.size()); i++){//in each interesting layer has wire hits
 
               int tempLayer = wire[layer_wire[i]].first.Layer;
               vector<Wire> tempWire = wire[layer_wire[i]].second;
-
+	      std::cout<<"  =============== Wire Display 2    tempWire layer    "<< i << "   temp Layer   " << tempLayer << "   twmpWiresize    " <<tempWire.size() <<std::endl;
+	      
               MakeOneLayerWireDisplay(tempLayer, tempWire, wireDis);
+	      std::cout<<"   compare layers          "<< tempLayer << "  ==   "<<  id.Layer <<std::endl;
 
+	      
               if (tempLayer == id.Layer){
-
+		std::cout<<"  =============== Wire Display 3     "<<std::endl;
                  MakeOneLayerWireDisplay(tempLayer, tempWire, wireDis_text);
 
                  }
